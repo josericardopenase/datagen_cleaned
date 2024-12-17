@@ -1,7 +1,6 @@
 from PIL import Image
-from abc import ABC, abstractmethod
 
-from pipelines.dependencies.image_inpainters.image_inpainter import ImageInpainter
+from pipelines.dependencies.gen_ai.image_inpainters.image_inpainter import ImageInpainter
 
 
 class MockImageInpainter(ImageInpainter):

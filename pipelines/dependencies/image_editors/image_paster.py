@@ -1,19 +1,45 @@
 from PIL import Image
 from typing import Tuple
 
-class ImagePaster:
-    def __init__(self):
-        ...
+from pydantic import ConfigDict
+from pipelines.dependencies.image_editors.image_editor import ImageEditor
 
-    def paste(self, original_image: Image.Image, pasted_image: Image.Image, center: Tuple[int, int]) -> Image.Image:
+
+class ImagePaster(ImageEditor):
+    patch: Image.Image
+    center: Tuple[int, int]
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    def edit(self, original_image: Image.Image) -> Image.Image:
         result_image = original_image.copy()
-        cx, cy = center
-        left = cx - pasted_image.width // 2
-        top = cy - pasted_image.height // 2
-        right = left + pasted_image.width
-        bottom = top + pasted_image.height
-        paste_box = (max(0, left), max(0, top), min(right, original_image.width), min(bottom, original_image.height))
-        crop_box = (paste_box[0] - left, paste_box[1] - top, paste_box[2] - left, paste_box[3] - top)
-        cropped_pasted_image = pasted_image.crop(crop_box)
-        result_image.paste(cropped_pasted_image, paste_box)
+        cx, cy = self.center
+
+        # Calculate cropping and pasting boundaries
+        left = cx - self.patch.width // 2
+        top = cy - self.patch.height // 2
+        right = left + self.patch.width
+        bottom = top + self.patch.height
+
+        # Ensure paste_box is within bounds
+        paste_box = (
+            max(0, left),
+            max(0, top),
+            min(right, original_image.width),
+            min(bottom, original_image.height)
+        )
+
+        # Crop the patch to match the region being pasted
+        crop_box = (
+            paste_box[0] - left,
+            paste_box[1] - top,
+            paste_box[2] - left,
+            paste_box[3] - top
+        )
+
+        # Crop patch and preserve transparency
+        cropped_patch = self.patch.crop(crop_box)
+
+        # Paste cropped patch onto the result image using alpha channel as a mask
+        result_image.paste(cropped_patch, paste_box, cropped_patch)
         return result_image

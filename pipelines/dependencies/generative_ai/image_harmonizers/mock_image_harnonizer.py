@@ -1,8 +1,6 @@
-from abc import abstractmethod, ABC
-
 from PIL  import Image
 
-from pipelines.dependencies.image_harmonizers.image_harmonizer import ImageHarmonizer
+from pipelines.dependencies.gen_ai.image_harmonizers.image_harmonizer import ImageHarmonizer
 
 
 class MockImageHarmonizer(ImageHarmonizer):

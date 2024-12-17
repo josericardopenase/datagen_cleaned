@@ -1,8 +1,7 @@
 import os
 from typing import Tuple, List
 from PIL import Image
-import numpy as np
-from pipelines.dependencies.object_stitchers.object_stitcher import ObjectStitcher
+from pipelines.dependencies.gen_ai.object_stitchers.object_stitcher import ObjectStitcher
 from libcom import Mure_ObjectStitchModel
 import torch
 import tempfile

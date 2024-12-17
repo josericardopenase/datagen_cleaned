@@ -3,7 +3,7 @@ from PIL import Image
 from libcom import ImageHarmonizationModel
 from libcom.utils.process_image import make_image_grid
 
-from pipelines.dependencies.image_harmonizers.image_harmonizer import ImageHarmonizer
+from pipelines.dependencies.gen_ai.image_harmonizers.image_harmonizer import ImageHarmonizer
 
 
 class LibcomImageHarmonizer(ImageHarmonizer):

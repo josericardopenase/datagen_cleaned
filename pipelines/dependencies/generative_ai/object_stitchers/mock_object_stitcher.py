@@ -1,9 +1,8 @@
-from abc import ABC, abstractmethod
 from typing import Tuple
 
 from PIL import Image
 
-from pipelines.dependencies.object_stitchers.object_stitcher import ObjectStitcher
+from pipelines.dependencies.gen_ai.object_stitchers.object_stitcher import ObjectStitcher
 
 
 class MockObjectStitcher(ObjectStitcher):

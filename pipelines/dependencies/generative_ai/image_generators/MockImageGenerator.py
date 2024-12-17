@@ -1,4 +1,4 @@
-from pipelines.dependencies.image_generators.image_generator import ImageGenerator
+from pipelines.dependencies.gen_ai.image_generators.image_generator import ImageGenerator
 from PIL import Image
 
 

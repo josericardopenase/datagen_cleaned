@@ -3,7 +3,7 @@ from PIL import Image
 
 from pipelines.inpainting.dependencies.segmentation_mask_generator import SegmentationMaskGenerator
 from pipelines.dependencies.image_cropper import ImageCropper
-from pipelines.dependencies.image_inpainters.stable_diffusion_image_inpainter import StableDiffusionImageInpainter, ImageInpainter
+from pipelines.dependencies.gen_ai.image_inpainters.stable_diffusion_image_inpainter import StableDiffusionImageInpainter, ImageInpainter
 from pipelines.dependencies.image_paster import ImagePaster
 from pipelines.inpainting.dependencies.mask_creator import MaskCreator
 from pipelines.utils import plot_images, draw_square_inside_image

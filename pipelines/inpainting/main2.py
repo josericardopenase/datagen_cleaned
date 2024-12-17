@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from pipelines.dependencies.image_generators.MockImageGenerator import MockImageGenerator
-from pipelines.dependencies.image_generators.image_generator import ImageGenerator
-from pipelines.dependencies.image_inpainters.stable_diffusion_image_inpainter import StableDiffusionImageInpainter, ImageInpainter
+from pipelines.dependencies.gen_ai.image_generators.MockImageGenerator import MockImageGenerator
+from pipelines.dependencies.gen_ai.image_generators.image_generator import ImageGenerator
+from pipelines.dependencies.gen_ai.image_inpainters.stable_diffusion_image_inpainter import StableDiffusionImageInpainter, ImageInpainter
 from pipelines.inpainting.dependencies.mask_creator import MaskCreator
 from pipelines.utils import plot_images, draw_square_inside_image
 import sys

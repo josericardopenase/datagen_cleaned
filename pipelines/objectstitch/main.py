@@ -2,8 +2,8 @@ from typing import Tuple
 from PIL import Image
 from pipelines.dependencies.image_cropper import ImageCropper
 from pipelines.dependencies.image_paster import ImagePaster
-from pipelines.dependencies.object_stitchers.libcom_object_stitcher import LibcomObjectStitcher
-from pipelines.dependencies.object_stitchers.object_stitcher import ObjectStitcher
+from pipelines.dependencies.gen_ai.object_stitchers import LibcomObjectStitcher
+from pipelines.dependencies.gen_ai.object_stitchers import ObjectStitcher
 from pipelines.harmonization.dependencies.image_compositor import ImageCompositor
 from pipelines.harmonization.dependencies.transparent_image_adjuster import TransparentImageAdjuster
 from pipelines.objectstitch.dependencies.BoxMaskGenerator import BoxMaskGenerator

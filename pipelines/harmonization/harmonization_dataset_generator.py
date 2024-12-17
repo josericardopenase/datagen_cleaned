@@ -3,9 +3,9 @@ from PIL import Image
 from dataclasses import dataclass
 from pipelines.dependencies.background_removers.background_remover import BackgroundRemover
 from pipelines.dependencies.image_cropper import ImageCropper
-from pipelines.dependencies.image_generators.image_generator import ImageGenerator
-from pipelines.dependencies.image_harmonizers.image_harmonizer import ImageHarmonizer
-from pipelines.dependencies.image_inpainters.image_inpainter import ImageInpainter
+from pipelines.dependencies.gen_ai.image_generators.image_generator import ImageGenerator
+from pipelines.dependencies.gen_ai.image_harmonizers import ImageHarmonizer
+from pipelines.dependencies.gen_ai.image_inpainters.image_inpainter import ImageInpainter
 from pipelines.dependencies.image_paster import ImagePaster
 from pipelines.dependencies.loggers.logger import Logger
 from pipelines.dependencies.point_extractors.point_extractor import PointExtractor
@@ -131,6 +131,3 @@ class HarmonizationDatasetGenerator:
     @staticmethod
     def get_bounding_box(boat_position : Tuple[int,int], shape: Tuple[int, int]) -> Tuple[int, int, int, int]:
         return boat_position[0], boat_position[1], shape[0], shape[1]
-
-
-
