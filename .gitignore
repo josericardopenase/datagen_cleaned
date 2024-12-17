@@ -193,3 +193,4 @@ results/
 .*.swp
 .idea
 models
+models/*
