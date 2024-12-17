@@ -1,13 +1,16 @@
 from PIL import Image
 from typing import Tuple
 
-class ImageCropper:
-    def __init__(self):
-        ...
+from pydantic import BaseModel
 
-    def crop(self, image: Image.Image, center: Tuple[int, int], resolution: Tuple[int, int]) -> Image.Image:
-        cx, cy = center
-        width, height = resolution
+
+class ImageCropper(BaseModel):
+    center: Tuple[int, int]
+    resolution: Tuple[int, int]
+
+    def crop(self, image: Image.Image) -> Image.Image:
+        cx, cy = self.center
+        width, height = self.resolution
         left = cx - width // 2
         top = cy - height // 2
         right = cx + width // 2
