@@ -192,3 +192,4 @@ results/
 # Ignore hidden files
 .*.swp
 .idea
+models
