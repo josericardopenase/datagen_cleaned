@@ -194,3 +194,5 @@ results/
 .idea
 models
 models/*
+runs
+runs/*
