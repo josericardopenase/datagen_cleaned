@@ -1,5 +1,6 @@
-from pipelines.dependencies.gen_ai.image_generators.image_generator import ImageGenerator
 from PIL import Image
+
+from core.dependencies.ai.generative_ai.image_generators.image_generator import ImageGenerator
 
 
 class MockImageGenerator(ImageGenerator):

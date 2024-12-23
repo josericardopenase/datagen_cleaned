@@ -1,6 +1,6 @@
 from PIL  import Image
 
-from pipelines.dependencies.gen_ai.image_harmonizers.image_harmonizer import ImageHarmonizer
+from core.dependencies.ai.generative_ai.image_harmonizers.image_harmonizer import ImageHarmonizer
 
 
 class MockImageHarmonizer(ImageHarmonizer):

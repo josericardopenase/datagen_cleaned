@@ -1,6 +1,6 @@
 from PIL import Image
 
-from pipelines.dependencies.ai.discriminative_ai.point_extractors.point_extractor import PointExtractor
+from core.dependencies.ai.discriminative_ai.point_extractors.point_extractor import PointExtractor
 
 
 class MockPointExtractor(PointExtractor):

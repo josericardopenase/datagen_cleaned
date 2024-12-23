@@ -1,7 +1,8 @@
 from diffusers import StableDiffusionInpaintPipeline
 import torch
 from PIL import Image
-from pipelines.dependencies.gen_ai.image_inpainters.image_inpainter import ImageInpainter
+
+from core.dependencies.ai.generative_ai.image_inpainters.image_inpainter import ImageInpainter
 
 
 class StableDiffusionImageInpainter(ImageInpainter):

@@ -2,7 +2,7 @@ from typing import Tuple
 
 from PIL import Image
 
-from pipelines.dependencies.gen_ai.object_stitchers.object_stitcher import ObjectStitcher
+from core.dependencies.ai.generative_ai.object_stitchers.object_stitcher import ObjectStitcher
 
 
 class MockObjectStitcher(ObjectStitcher):

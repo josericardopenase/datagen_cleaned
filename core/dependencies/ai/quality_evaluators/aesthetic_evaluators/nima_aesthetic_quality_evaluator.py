@@ -4,7 +4,7 @@ from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 
-from pipelines.dependencies.ai.quality_evaluators.aesthetic_evaluators.aesthetic_evaluator import AestheticQualityEvaluator
+from core.dependencies.ai.quality_evaluators.aesthetic_evaluators.aesthetic_evaluator import AestheticQualityEvaluator
 
 
 class NIMAAestheticQualityEvaluator(AestheticQualityEvaluator):

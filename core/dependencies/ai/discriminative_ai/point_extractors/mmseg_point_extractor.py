@@ -1,11 +1,13 @@
-from pipelines.dependencies.api.mmseg_api import MMSegAPI
 import matplotlib.pyplot as plt
-from pipelines.dependencies.ai.discriminative_ai.point_extractors.point_extractor import PointExtractor
 import random
 import numpy as np
 from typing import List, Tuple, Callable
 from PIL import Image
 from scipy.stats import multivariate_normal
+
+from core.dependencies.ai.discriminative_ai.point_extractors.point_extractor import PointExtractor
+from core.dependencies.api.mmseg_api import MMSegAPI
+
 
 class MMSegPointExtractor(PointExtractor):
     def __init__(self, api: MMSegAPI):
@@ -76,15 +78,3 @@ class MMSegPointExtractor(PointExtractor):
         sampled_point = multivariate_normal.rvs(mean=mean, cov=cov)
         sampled_pixel = tuple(map(int, map(round, sampled_point)))
         return random.choice(pixels) if sampled_pixel not in pixels else sampled_pixel
-
-"""
-api = MMSegAPI(url="http://100.103.218.9:4553/v1")
-point_extractor = MMSegPointExtractor(api)
-image_path = "../../../assets/bgs/bg.jpg"
-img = Image.open(image_path)
-pixel = point_extractor.extract(img)
-highlighted_img = draw_square_inside_image(img, (500, 500), pixel, 3, 20)
-plt.imshow(highlighted_img)
-plt.axis('off')
-plt.show()
-"""

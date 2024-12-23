@@ -1,6 +1,6 @@
 from PIL import Image
 
-from pipelines.dependencies.ai.discriminative_ai.background_removers.background_remover import BackgroundRemover
+from core.dependencies.ai.discriminative_ai.background_removers.background_remover import BackgroundRemover
 
 
 class MockBackgroundRemover(BackgroundRemover):

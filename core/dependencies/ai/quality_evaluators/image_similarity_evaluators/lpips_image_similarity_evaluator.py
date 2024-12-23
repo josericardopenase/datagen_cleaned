@@ -3,7 +3,7 @@ from PIL import Image
 import torch
 import torchvision.transforms as transforms
 
-from pipelines.dependencies.ai.quality_evaluators.image_similarity_evaluators.text_similarity_evaluators import \
+from core.dependencies.ai.quality_evaluators.image_similarity_evaluators.text_similarity_evaluators import \
     ImageSimilarityEvaluator
 
 

@@ -1,10 +1,12 @@
 import os
 from typing import Tuple, List
 from PIL import Image
-from pipelines.dependencies.gen_ai.object_stitchers.object_stitcher import ObjectStitcher
 from libcom import Mure_ObjectStitchModel
 import torch
 import tempfile
+
+from core.dependencies.ai.generative_ai.object_stitchers.object_stitcher import ObjectStitcher
+
 
 class LibcomObjectStitcher(ObjectStitcher):
     def __init__(self, device: str = 'cuda', model_type: str = 'ObjectStitch', sampler: str = 'plms'):

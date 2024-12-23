@@ -6,7 +6,7 @@ from torchvision.transforms import Compose, Resize, ToTensor, Normalize
 from torch.utils.data import DataLoader
 from torchvision.models import inception_v3
 
-from pipelines.dependencies.ai.quality_evaluators.dataset_similarity_evaluators.dataset_similarity_evaluator import \
+from core.dependencies.ai.quality_evaluators.dataset_similarity_evaluators.dataset_similarity_evaluator import \
     DatasetSimilarityEvaluator
 
 

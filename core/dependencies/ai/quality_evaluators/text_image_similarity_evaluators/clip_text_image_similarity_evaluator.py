@@ -2,7 +2,7 @@ from PIL import Image
 import torch
 from transformers import CLIPProcessor, CLIPModel
 
-from pipelines.dependencies.ai.quality_evaluators.text_image_similarity_evaluators.image_similarity_evaluators import \
+from core.dependencies.ai.quality_evaluators.text_image_similarity_evaluators.image_similarity_evaluators import \
     TextImageSimilarityEvaluator
 
 

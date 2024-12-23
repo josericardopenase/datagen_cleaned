@@ -2,7 +2,7 @@ import random
 from PIL import Image
 import os
 
-from pipelines.dependencies.gen_ai.image_generators.image_generator import ImageGenerator
+from core.dependencies.ai.generative_ai.image_generators.image_generator import ImageGenerator
 
 
 class StochasticImageGenerator(ImageGenerator):
