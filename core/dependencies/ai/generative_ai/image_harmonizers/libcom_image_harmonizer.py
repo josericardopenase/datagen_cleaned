@@ -7,13 +7,14 @@ from core.dependencies.ai.generative_ai.image_harmonizers.image_harmonizer impor
 
 
 class LibcomImageHarmonizer(ImageHarmonizer):
-    def __init__(self, device: int = 0, model_type: str = 'CDTNet'):
-        self.model = ImageHarmonizationModel(device=device, model_type=model_type)
+    device: int = 0
+    model_type : str = 'CDTNet'
 
     def harmonize(self, image: Image.Image, mask: Image.Image) -> Image.Image:
+        model = ImageHarmonizationModel(device=self.device, model_type=self.model_type)
         image_np = np.array(image.convert('RGB'))
         mask_np = np.array(mask.convert('L'))
-        output_np = self.model(image_np, mask_np)
+        output_np = model(image_np, mask_np)
         output_image = Image.fromarray(output_np.astype(np.uint8))
         return output_image
 

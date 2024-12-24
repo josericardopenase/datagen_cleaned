@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import pytest
 from PIL import Image
 
-from pipelines.dependencies.utils.image.image_editors.image_paster import ImagePaster
+from core.dependencies.utils.image.image_editors.image_paster import ImagePaster
 
 
 @pytest.fixture
@@ -21,8 +21,6 @@ def test_image_paster(sample_image, sample_patch):
         center=(5, 5)
     )
     img = paster.edit(sample_image)
-    plt.imshow(img)
-    plt.show()
     assert img.getpixel((5, 5)) == (255, 0, 0, 255), "pixels inside center should be colored"
     assert img.getpixel((4, 5)) == (255, 0, 0, 255)
     assert img.getpixel((5, 4)) == (255, 0, 0, 255)
@@ -47,7 +45,5 @@ def test_paster_with_transparent_images(sample_image, sample_patch):
         center=(0, 0)
     )
     img = paster.edit(sample_image)
-    plt.imshow(img)
-    plt.show()
     assert img.getpixel((0, 0)) == (0, 255, 255, 255), "pixels inside center should be colored"
     assert img.getpixel((1, 1)) == (0, 255, 255, 255)

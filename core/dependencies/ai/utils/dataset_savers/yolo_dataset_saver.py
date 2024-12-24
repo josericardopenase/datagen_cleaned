@@ -1,7 +1,8 @@
 import os
 
-from pipelines.dependencies.ai.utils.dataset_savers.dataset_saver import DatasetSaver
 from uuid import uuid4
+
+from core.dependencies.ai.utils.dataset_savers.dataset_saver import DatasetSaver
 
 
 class YoloDatasetSaver(DatasetSaver):

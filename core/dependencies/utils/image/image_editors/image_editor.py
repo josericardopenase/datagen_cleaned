@@ -5,5 +5,5 @@ from pydantic import BaseModel
 
 class ImageEditor(ABC, BaseModel):
     @abstractmethod
-    def edit(self, img : Image.Image):
+    def edit(self, img : Image.Image) -> Image.Image:
         ...

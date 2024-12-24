@@ -6,9 +6,7 @@ from core.dependencies.ai.generative_ai.image_generators.image_generator import 
 
 
 class StochasticImageGenerator(ImageGenerator):
-    def __init__(self, dir: str):
-        self.dir = dir
-
+    dir : str
 
     def is_image(self, path : str) -> bool:
         return path.endswith('.jpg') or path.endswith('.png') or path.endswith('.jpeg')

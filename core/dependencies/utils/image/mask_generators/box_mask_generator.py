@@ -2,7 +2,7 @@ from typing import Tuple
 
 from PIL import Image, ImageDraw
 
-from pipelines.dependencies.utils.image.mask_generators.mask_generators import MaskGenerator
+from core.dependencies.utils.image.mask_generators.mask_generators import MaskGenerator
 
 
 class BoxMaskGenerator(MaskGenerator):

@@ -1,7 +1,8 @@
 import numpy as np
 import pytest
 
-from pipelines.dependencies.utils.image.mask_generators.box_mask_generator import BoxMaskGenerator
+from core.dependencies.utils.image.mask_generators.box_mask_generator import BoxMaskGenerator
+
 
 def test_box_mask_generator():
     """Test standard box mask generation with a centered mask."""

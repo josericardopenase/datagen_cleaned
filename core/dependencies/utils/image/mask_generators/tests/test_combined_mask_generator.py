@@ -1,6 +1,8 @@
 import pytest
-from pipelines.dependencies.utils.image.mask_generators.box_mask_generator import BoxMaskGenerator
-from pipelines.dependencies.utils.image.mask_generators.combined_mask_generator import CombineMaskGenerator
+
+from core.dependencies.utils.image.mask_generators.box_mask_generator import BoxMaskGenerator
+from core.dependencies.utils.image.mask_generators.combined_mask_generator import CombineMaskGenerator
+
 
 @pytest.fixture
 def mask_one():

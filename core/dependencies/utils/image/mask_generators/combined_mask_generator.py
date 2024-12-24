@@ -3,8 +3,9 @@ from typing import Tuple
 
 from PIL import Image
 
-from pipelines.dependencies.utils.image.mask_generators.mask_generators import MaskGenerator
 from dataclasses import field
+
+from core.dependencies.utils.image.mask_generators.mask_generators import MaskGenerator
 
 
 class CombineMaskGenerator(MaskGenerator):

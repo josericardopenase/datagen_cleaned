@@ -2,7 +2,8 @@ from PIL import Image
 from typing import Tuple
 
 from pydantic import ConfigDict
-from pipelines.dependencies.utils.image.image_editors.image_editor import ImageEditor
+
+from core.dependencies.utils.image.image_editors.image_editor import ImageEditor
 
 
 class ImagePaster(ImageEditor):

@@ -1,4 +1,4 @@
-from pipelines.dependencies.utils.logging.loggers.logger import Logger
+from core.dependencies.utils.logging.loggers.logger import Logger
 
 
 class TerminalLogger(Logger):

@@ -4,14 +4,14 @@ import numpy as np
 from typing import List, Tuple, Callable
 from PIL import Image
 from scipy.stats import multivariate_normal
+import random
 
 from core.dependencies.ai.discriminative_ai.point_extractors.point_extractor import PointExtractor
 from core.dependencies.api.mmseg_api import MMSegAPI
 
 
 class MMSegPointExtractor(PointExtractor):
-    def __init__(self, api: MMSegAPI):
-        self.api = api
+    api : MMSegAPI
 
     def extract(self, image: Image.Image) -> Tuple[int, int]:
         segmented_img = self.api.segment_image(image)

@@ -4,7 +4,7 @@ from typing import Optional, Callable, Tuple
 from PIL import Image
 from pydantic import ConfigDict
 
-from pipelines.dependencies.utils.image.mask_generators.mask_generators import MaskGenerator
+from core.dependencies.utils.image.mask_generators.mask_generators import MaskGenerator
 
 
 class AlphaMaskGenerator(MaskGenerator):

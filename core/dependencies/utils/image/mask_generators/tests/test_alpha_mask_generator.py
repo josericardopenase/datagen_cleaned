@@ -3,7 +3,8 @@ import pytest
 
 from PIL import Image, ImageDraw
 
-from pipelines.dependencies.utils.image.mask_generators.alpha_mask_generator import AlphaMaskGenerator
+from core.dependencies.utils.image.mask_generators.alpha_mask_generator import AlphaMaskGenerator
+
 
 @pytest.fixture
 def alpha_img():

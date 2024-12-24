@@ -6,9 +6,8 @@ from core.dependencies.api.mmseg_api import MMSegAPI
 
 
 class MMSegBackgroundRemover(BackgroundRemover):
-    def __init__(self, category: str, api: MMSegAPI):
-        self.category = category
-        self.api = api
+    category : str
+    api : MMSegAPI
 
     def remove(self, image: Image.Image) -> Image.Image:
         segmented_image = self.api.segment_image(image)
