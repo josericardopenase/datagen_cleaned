@@ -59,6 +59,21 @@ def test_generate_outside_mask(multiple_alpha_img):
             else:
                 assert mask.getpixel((x, y)) == 0, f"Failed at position {(x, y)}"
 
+def test_generate_outside_mask_with_strength(multiple_alpha_img):
+    mask_generator = AlphaMaskGenerator(
+        alpha_image=multiple_alpha_img,
+        type=AlphaMaskGenerator.Type.outside,
+        strength=100
+    )
+    mask = mask_generator.generate()
+    for x in range(10):
+        for y in range(10):
+            if multiple_alpha_img.getpixel((x, y))[3] == 0:  # Transparent pixels
+                assert mask.getpixel((x, y)) == 100, f"Failed at position {(x, y)}"
+            else:
+                assert mask.getpixel((x, y)) == 0, f"Failed at position {(x, y)}"
+
+
 def test_generate_border_inside_mask(big_alpha_img):
     """Test: Verify that the border inside mask marks only the inner edge of the alpha area."""
     mask_generator = AlphaMaskGenerator(
@@ -81,7 +96,34 @@ def test_generate_border_inside_mask(big_alpha_img):
                     for dy in range(-2, 3)
                     if 0 <= x + dx < 14 and 0 <= y + dy < 14
                 ):
-                    assert mask_array[y, x] > 0, f"Expected border at ({x}, {y})"
+                    assert mask_array[y, x] == 255, f"Expected border at ({x}, {y})"
+                else:
+                    assert mask_array[y, x] == 0, f"Unexpected border at ({x}, {y})"
+
+def test_generate_border_inside_mask_with_strength(big_alpha_img):
+    """Test: Verify that the border inside mask marks only the inner edge of the alpha area."""
+    mask_generator = AlphaMaskGenerator(
+        alpha_image=big_alpha_img,
+        type=AlphaMaskGenerator.Type.border_inside,
+        border_width=2,
+        strength=126
+    )
+    mask = mask_generator.generate()
+    mask_array = np.array(mask)
+
+    # Verifica que haya valores > 0 solo en los bordes internos
+    for x in range(14):
+        for y in range(14):
+            alpha_value = big_alpha_img.getpixel((x, y))[3]
+            if alpha_value > 0:  # Dentro de la región alpha
+                # Comprueba si está en el borde interno (dentro del ancho definido)
+                if any(
+                        big_alpha_img.getpixel((x + dx, y + dy))[3] == 0
+                        for dx in range(-2, 3)
+                        for dy in range(-2, 3)
+                        if 0 <= x + dx < 14 and 0 <= y + dy < 14
+                ):
+                    assert mask_array[y, x] == 126, f"Expected border at ({x}, {y})"
                 else:
                     assert mask_array[y, x] == 0, f"Unexpected border at ({x}, {y})"
 
@@ -108,5 +150,32 @@ def test_generate_border_outside_mask(big_alpha_img):
                     if 0 <= x + dx < 14 and 0 <= y + dy < 14
                 ):
                     assert mask_array[y, x] > 0, f"Expected border at ({x}, {y})"
+                else:
+                    assert mask_array[y, x] == 0, f"Unexpected border at ({x}, {y})"
+
+def test_generate_border_outside_mask_with_strenght(big_alpha_img):
+    """Test: Verify that the border outside mask marks only the outer edge of the alpha area."""
+    mask_generator = AlphaMaskGenerator(
+        alpha_image=big_alpha_img,
+        type=AlphaMaskGenerator.Type.border_outside,
+        border_width=1,
+        strength=100
+    )
+    mask = mask_generator.generate()
+    mask_array = np.array(mask)
+
+    # Verifica que haya valores > 0 solo en los bordes externos
+    for x in range(14):
+        for y in range(14):
+            alpha_value = big_alpha_img.getpixel((x, y))[3]
+            if alpha_value == 0:  # Fuera de la región alpha
+                # Comprueba si está justo en el borde externo
+                if any(
+                        big_alpha_img.getpixel((x + dx, y + dy))[3] > 0
+                        for dx in range(-1, 2)
+                        for dy in range(-1, 2)
+                        if 0 <= x + dx < 14 and 0 <= y + dy < 14
+                ):
+                    assert mask_array[y, x] == 100, f"Expected border at ({x}, {y})"
                 else:
                     assert mask_array[y, x] == 0, f"Unexpected border at ({x}, {y})"

@@ -4,5 +4,5 @@ from core.dependencies.ai.generative_ai.image_inpainters.image_inpainter import 
 
 
 class MockImageInpainter(ImageInpainter):
-    def inpaint(self,  original_image: Image.Image, mask_image: Image.Image, prompt : str ="") -> Image.Image:
+    def inpaint(self,  original_image: Image.Image, mask_image: Image.Image) -> Image.Image:
         return original_image

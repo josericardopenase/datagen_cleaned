@@ -12,8 +12,9 @@ from core.dependencies.api.mmseg_api import MMSegAPI
 
 class MMSegPointExtractor(PointExtractor):
     api : MMSegAPI
+    n_points : int = 1
 
-    def extract(self, image: Image.Image) -> Tuple[int, int]:
+    def extract(self, image: Image.Image) -> List[Tuple[int, int]]:
         segmented_img = self.api.segment_image(image)
         plt.imshow(segmented_img)
         plt.axis('off')
@@ -21,12 +22,12 @@ class MMSegPointExtractor(PointExtractor):
         color = self.api.get_inference_color("sea")
         pixels = self.get_pixels_with_color(color, segmented_img)
         pixels_with_rules_applied = self.filter_pixels_by_rules(pixels, rules=[
-        self.pixels_cannot_be_near_y_axis_edge_with_color(80, segmented_img, color),
-        self.pixels_cannot_be_near_x_axis_edge_with_color(180, segmented_img, color)
+            self.pixels_cannot_be_near_y_axis_edge_with_color(50, segmented_img, color),
+            self.pixels_cannot_be_near_x_axis_edge_with_color(50, segmented_img, color)
         ])
         if not pixels_with_rules_applied:
             raise ValueError("No se encontraron píxeles válidos después de aplicar las reglas.")
-        return self.sample_from_multivariate_normal(pixels_with_rules_applied)
+        return [self.sample_from_multivariate_normal(pixels_with_rules_applied) for x in range(self.n_points)]
 
     def pixels_cannot_be_near_y_axis_edge_with_color(self, margin: int, img: Image.Image, color: Tuple[int, int, int]):
         img_arr = np.array(img)

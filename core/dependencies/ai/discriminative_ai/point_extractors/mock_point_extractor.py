@@ -9,4 +9,4 @@ class MockPointExtractor(PointExtractor):
     point : Tuple[int, int]
 
     def extract(self, image : Image.Image):
-        return self.point
+        return [self.point,]

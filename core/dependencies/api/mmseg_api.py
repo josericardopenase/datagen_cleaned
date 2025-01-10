@@ -1,17 +1,17 @@
 import hashlib
-from typing import List, Any, Tuple
+from typing import List, Any, Tuple, Optional
 from io import BytesIO
 from PIL import Image
 import base64
 import requests
 import os
 
-class MMSegAPI:
-    def __init__(self, url: str, cache_dir : str ="./segmentation_cache"):
-        self.url = url
-        self.cache_dir = cache_dir
-        if not os.path.exists(self.cache_dir):
-            os.mkdir(self.cache_dir)
+from pydantic import BaseModel
+
+
+class MMSegAPI(BaseModel):
+    url : str
+    cache_dir : str = "./segmentation_cache"
 
     @staticmethod
     def to_base64(image: Image.Image) -> str:
@@ -20,6 +20,8 @@ class MMSegAPI:
         return base64.b64encode(buffer.getvalue()).decode('utf-8')
 
     def segment_image(self, image: Image.Image) -> Image.Image:
+        if not os.path.exists(self.cache_dir):
+            os.mkdir(self.cache_dir)
         if self.is_in_cache(image):
             return self.recover_from_cache(image)
         payload = self.create_payload([self.to_base64(image)])

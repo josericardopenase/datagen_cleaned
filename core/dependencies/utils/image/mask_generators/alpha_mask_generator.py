@@ -16,8 +16,8 @@ class AlphaMaskGenerator(MaskGenerator):
 
     alpha_image : Image.Image
     type : Type
-
-    border_width : Optional[int] = None
+    strength: int = 255
+    border_width : int = 2
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -43,13 +43,13 @@ class AlphaMaskGenerator(MaskGenerator):
     def __generate_fill_mask_inside(self) -> Image.Image:
         def filter(image : Image.Image, pos : Tuple[int, int]):
             if self.alpha_image.getpixel(pos)[3] != 0:
-                image.putpixel(pos, 255)
+                image.putpixel(pos, self.strength)
         return self.__map_pixel(Image.new("L", self.alpha_image.size, 0), filter)
 
     def __generate_fill_mask_outside(self) -> Image.Image:
         def filter(image : Image.Image, pos : Tuple[int, int]):
             if self.alpha_image.getpixel(pos)[3] == 0:
-                image.putpixel(pos, 255)
+                image.putpixel(pos, self.strength)
         return self.__map_pixel(Image.new("L", self.alpha_image.size), filter)
 
     def __generate_border_inside_mask(self) -> Image.Image:
@@ -65,7 +65,7 @@ class AlphaMaskGenerator(MaskGenerator):
                         nx, ny = x + dx, y + dy
                         if 0 <= nx < self.alpha_image.size[0] and 0 <= ny < self.alpha_image.size[1]:
                             if self.alpha_image.getpixel((nx, ny))[3] == 0:  # Adjacent to transparent pixel
-                                image.putpixel((x, y), 255)  # Set border pixel value
+                                image.putpixel((x, y), self.strength)  # Set border pixel value
                                 return  # Exit early if the border condition is met
 
         return self.__map_pixel(mask, filter)
@@ -82,5 +82,5 @@ class AlphaMaskGenerator(MaskGenerator):
                     for dy in range(-self.border_width, self.border_width + 1):
                         if 0 <= x + dx <= self.alpha_image.size[0] and 0 <= y + dy <= self.alpha_image.size[1]:
                             if self.alpha_image.getpixel((x + dx, y + dy))[3] == 0:
-                                image.putpixel((x + dx, y + dy), 255)
+                                image.putpixel((x + dx, y + dy), self.strength)
         return self.__map_pixel(mask, filter)

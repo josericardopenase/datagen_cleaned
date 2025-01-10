@@ -1,25 +1,39 @@
-from typing import Tuple
+import uuid
+from typing import Tuple, List
+
+import numpy as np
 from PIL import Image
 from matplotlib import pyplot as plt
+from dotenv import load_dotenv
+import os
 
 from core.dependencies.ai.discriminative_ai.background_removers.background_remover import BackgroundRemover
 from core.dependencies.ai.discriminative_ai.background_removers.mock_background_remover import MockBackgroundRemover
-from core.dependencies.ai.discriminative_ai.point_extractors.mock_point_extractor import MockPointExtractor
+from core.dependencies.ai.discriminative_ai.background_removers.stable_diffusion_background_remover import \
+    StableDiffusionBackgroundRemover
+from core.dependencies.ai.discriminative_ai.point_extractors.mmseg_point_extractor import MMSegPointExtractor
 from core.dependencies.ai.discriminative_ai.point_extractors.point_extractor import PointExtractor
 from core.dependencies.ai.generative_ai.image_generators.mock_image_generator import MockImageGenerator
 from core.dependencies.ai.generative_ai.image_generators.image_generator import ImageGenerator
+from core.dependencies.ai.generative_ai.image_generators.stable_diffusion_image_generator import \
+    StableDiffusionImageGenerator
 from core.dependencies.ai.generative_ai.image_harmonizers.image_harmonizer import ImageHarmonizer
 from core.dependencies.ai.generative_ai.image_harmonizers.mock_image_harnonizer import MockImageHarmonizer
 from core.dependencies.ai.generative_ai.image_inpainters.image_inpainter import ImageInpainter
 from core.dependencies.ai.generative_ai.image_inpainters.mock_image_inpainter import MockImageInpainter
-from core.dependencies.utils.image.image_editors.image_cropper import ImageCropper
+from core.dependencies.ai.generative_ai.image_inpainters.stable_diffusion_image_inpainter import \
+    StableDiffusionImageInpainter
+from core.dependencies.api.mmseg_api import MMSegAPI
+from core.dependencies.utils.datasets.bounding_box_generator import BoundingBoxGenerator
 from core.dependencies.utils.image.image_editors.image_paster import ImagePaster
 from core.dependencies.utils.image.mask_generators.alpha_mask_generator import AlphaMaskGenerator
-from core.dependencies.utils.image.mask_generators.combined_mask_generator import CombineMaskGenerator
 from core.pipelines.pipeline import DatasetGenerationPipeline, BoundingBox
 
 
 class HarmonizationDatasetGenerator(DatasetGenerationPipeline):
+    n_boats : int = 1
+    boat_size : int = 500
+    crop_resolution : Tuple[int, int] = (512, 512)
     boat_generator : ImageGenerator
     background_generator : ImageGenerator
     background_remover : BackgroundRemover
@@ -27,48 +41,72 @@ class HarmonizationDatasetGenerator(DatasetGenerationPipeline):
     harmonizer : ImageHarmonizer
     inpainter: ImageInpainter
 
-    def generate(self) -> Tuple[Image.Image, BoundingBox]:
-        boat = self.background_remover.remove(self.boat_generator.generate())
-        boat = boat.resize((200, ((boat.size[1]*200)//boat.size[0])))
+    def generate(self) -> Tuple[Image.Image, List[BoundingBox]]:
         bg = self.background_generator.generate()
-        point = self.point_extractor.extract(bg)
-        harmonized_image = self.harmonize_background_with_boat(bg, boat, point)
-        inpainted_image = self.inpaint_boat_inside_background(harmonized_image, boat, point)
-        return inpainted_image, BoundingBox(x=0, y=0, w=1, h=1)
+        points = self.point_extractor.extract(bg)
+        boats_with_transparency = Image.new("RGBA", bg.size, (0, 0, 0, 0))
+        bboxs = []
 
-    def inpaint_boat_inside_background(self, bg, boat, point):
-        cropped = ImageCropper(center=point, resolution=(512, 512)).edit(bg)
-        inpainting_mask = (
-            CombineMaskGenerator(resolution=(512, 512)).combine(
-                AlphaMaskGenerator(alpha_image=ImagePaster(center=(512 // 2, 512 // 2), patch=boat)
-                                   .edit(Image.new("RGBA", (512, 512), (0, 0, 0, 0))), type=AlphaMaskGenerator.Type.border_inside, border_width=3)
-            ).combine(
-                AlphaMaskGenerator(alpha_image=ImagePaster(center=(512 // 2, 512 // 2), patch=boat).edit(
-                    Image.new("RGBA", (512, 512), (0, 0, 0, 0))), type=AlphaMaskGenerator.Type.border_outside,
-                                   border_width=3)
-            ).generate()
-        )
-        inpainted_cropped = self.inpainter.inpaint(cropped, inpainting_mask, prompt="A boat with water trails")
-        return ImagePaster(center=point, patch=inpainted_cropped).edit(bg)
+        for x in points:
+            single_boat = Image.new("RGBA", bg.size, (0, 0, 0, 0))
+            base_boat = self.boat_generator.generate()
+            boat = self.background_remover\
+                .remove(base_boat)\
+                .resize((self.boat_size, ((base_boat.size[1] * self.boat_size) // base_boat.size[0]))).convert("RGBA")
+            single_boat = ImagePaster(center=x, patch=boat).edit(single_boat)
+            boats_with_transparency = ImagePaster(center=x, patch=boat).edit(boats_with_transparency)
+            bboxs.append(BoundingBoxGenerator().generate(alpha_img=single_boat))
 
-    def harmonize_background_with_boat(self, bg, boat, point):
-        cropped = ImageCropper(center=point, resolution=(512, 512)).edit(bg)
-        bg_with_boat = ImagePaster(center=(512 // 2, 512 // 2), patch=boat).edit(cropped)
-        harmonization_mask = ImagePaster(center=point, patch=AlphaMaskGenerator(
-            alpha_image=ImagePaster(center=(512 // 2, 512 // 2), patch=boat).edit(
-                Image.new("RGBA", (512, 512), (0, 0, 0, 0))), type=AlphaMaskGenerator.Type.inside).generate()).edit(
-            Image.new("L", bg.size, 0))
-        harmonization_bg = ImagePaster(center=point, patch=bg_with_boat).edit(bg)
-        harmonized_image = self.harmonizer.harmonize(harmonization_bg, harmonization_mask)
-        return harmonized_image
+        bg = ImagePaster(center=(bg.size[0]//2, bg.size[1]//2), patch=boats_with_transparency).edit(bg)
+        outside_inpainting_mask = AlphaMaskGenerator(
+            alpha_image=boats_with_transparency,
+            type=AlphaMaskGenerator.Type.border_outside,
+            border_width=5,
+            strength=255).generate()
+        inside_inpainting_mask = AlphaMaskGenerator(
+            alpha_image=boats_with_transparency,
+            type=AlphaMaskGenerator.Type.inside,
+            strength=100,
+            border_width=3).generate()
+
+        inpainted_outside = self.inpainter.inpaint(original_image=bg, mask_image=outside_inpainting_mask)
+        inpainted_inside = self.inpainter.inpaint(original_image=inpainted_outside, mask_image=inside_inpainting_mask)
+        return inpainted_inside, bboxs
 
 
+
+"""
+load_dotenv()
 img, bbox = HarmonizationDatasetGenerator(
-    boat_generator=MockImageGenerator(route="../../../data_assets/boats/without_bg/image_1-removebg-preview.png"),
-    background_generator=MockImageGenerator(route="../../../data_assets/bgs/fondo3.jpg"),
-    background_remover=MockBackgroundRemover(),
-    point_extractor=MockPointExtractor(point=(450, 750)),
+    boat_generator=StableDiffusionImageGenerator(api_key=os.getenv("SD_API_KEY", ""), prompt="A photo of a fishing ship with white background"),
+    background_generator=MockImageGenerator(route="../../../data_assets/bgs/fondo8.jpg"),
+    background_remover=StableDiffusionBackgroundRemover(api_key=os.getenv("SD_API_KEY", "")),
+    point_extractor=MMSegPointExtractor(api=MMSegAPI(url=os.getenv("MMSEG_API_URL", "http://100.103.218.9:4553/v1"))),
     harmonizer=MockImageHarmonizer(),
-    inpainter=MockImageInpainter()
+    inpainter=StableDiffusionImageInpainter(api_key=os.getenv("SD_API_KEY", ""), prompt="A coastal view of the sea and a background of the city", negative_prompt="boats")
 ).generate()
+plt.imshow(img)
+plt.show()
 img.save("harmonization.png")
+"""
+
+load_dotenv()
+img, bboxs = HarmonizationDatasetGenerator(
+    boat_size=260,
+    crop_resolution=(512, 512),
+    boat_generator=StableDiffusionImageGenerator(api_key=os.getenv("SD_API_KEY", ""), prompt="A motor fishing boat with white background", negative_prompt="background"),
+    #boat_generator=MockImageGenerator(route="../../../data_assets/boats/without_bg/image_2-removebg-preview.png"),
+    background_generator=MockImageGenerator(route="../../../data_assets/bgs/fondo10.jpg"),
+    background_remover=StableDiffusionBackgroundRemover(api_key=os.getenv("SD_API_KEY", "")),
+    #background_remover=MockBackgroundRemover(),
+    point_extractor=MMSegPointExtractor(api=MMSegAPI(url=os.getenv("MMSEG_API_URL", "http://100.103.218.9:4553/v1")), n_points=2),
+    harmonizer=MockImageHarmonizer(),
+    inpainter=StableDiffusionImageInpainter(api_key=os.getenv("SD_API_KEY", ""), prompt="A coastal view of open sea with two boats", negative_prompt="boats")
+    #inpainter=MockImageInpainter()
+).generate()
+#
+img.save(uuid.uuid4().hex + ".png")
+[BoundingBoxGenerator().paint(img, bbox, color=(255, 0, 0)) for bbox in bboxs]
+plt.imshow(img)
+plt.show()
+img.save(uuid.uuid4().hex + ".png")
